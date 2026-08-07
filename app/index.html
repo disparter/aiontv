@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=1920, height=1080, user-scalable=no"/>
+  <title>AI on TV</title>
+  <link rel="stylesheet" href="css/reset.css"/>
+  <link rel="stylesheet" href="css/tv-layout.css"/>
+  <link rel="stylesheet" href="css/focus.css"/>
+</head>
+<body>
+  <div id="app">
+    <!-- HOME / CATÁLOGO -->
+    <section id="screen_home" class="screen screen-home">
+      <header class="topbar">
+        <div class="brand">AI on TV</div>
+        <div id="status_line" class="status">Conectando…</div>
+        <button type="button" class="top-btn" id="btn_open_chat" data-focusable="true" data-action="chat">Falar com IA</button>
+      </header>
+
+      <div id="hero" class="hero">
+        <div class="hero-shade"></div>
+        <div class="hero-copy">
+          <div id="hero_eyebrow" class="hero-eyebrow">Em alta</div>
+          <h1 id="hero_title" class="hero-title">Carregando catálogo…</h1>
+          <p id="hero_overview" class="hero-overview"></p>
+          <div class="hero-actions">
+            <button type="button" class="cta" id="btn_play_hero" data-focusable="true" data-action="play-hero">▶ Assistir</button>
+            <button type="button" class="cta cta-ghost" id="btn_ask_hero" data-focusable="true" data-action="ask-hero">Perguntar à IA</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="rows" class="rows" aria-label="Catálogo"></div>
+    </section>
+
+    <!-- CHAT + TECLADO -->
+    <section id="screen_chat" class="screen screen-chat hidden" hidden>
+      <header class="topbar">
+        <div class="brand">AI on TV</div>
+        <div id="chat_status" class="status">Pronto</div>
+        <button type="button" class="top-btn" id="btn_back_catalog" data-focusable="true" data-action="home">Catálogo</button>
+      </header>
+
+      <div class="chat-layout">
+        <div id="chat_log" class="chat-log" aria-live="polite"></div>
+        <div class="composer">
+          <div id="prompt_preview" class="prompt-preview">Digite com o teclado ↓</div>
+          <div id="keyboard" class="keyboard"></div>
+          <div class="composer-actions">
+            <button type="button" class="cta" id="btn_send" data-focusable="true" data-action="send">Enviar</button>
+            <button type="button" class="cta cta-ghost" id="btn_clear" data-focusable="true" data-action="clear">Limpar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="js/config.js?v=0.3.0"></script>
+  <script src="js/remote/key-map.js?v=0.3.0"></script>
+  <script src="js/remote/focus-manager.js?v=0.3.0"></script>
+  <script src="js/net/rest-client.js?v=0.3.0"></script>
+  <script src="js/net/ws-client.js?v=0.3.0"></script>
+  <script src="js/ui/keyboard.js?v=0.3.0"></script>
+  <script src="js/ui/catalog-view.js?v=0.3.0"></script>
+  <script src="js/ui/renderer.js?v=0.3.0"></script>
+  <script src="js/main.js?v=0.3.0"></script>
+</body>
+</html>

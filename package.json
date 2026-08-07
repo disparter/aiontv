@@ -1,0 +1,44 @@
+{
+  "name": "aiontv",
+  "version": "0.3.0",
+  "description": "AI on TV — abre o thin client no PC (mesmo URL do app Internet)",
+  "packageType": "mods",
+  "appName": "AI on TV",
+  "websiteURL": "http://192.168.15.2:8080/tv/index.html",
+  "main": "noop.js",
+  "keys": [
+    "MediaPlay",
+    "MediaPause",
+    "MediaStop",
+    "ColorF0Red",
+    "ColorF1Green",
+    "ColorF2Yellow",
+    "ColorF3Blue",
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9"
+  ],
+  "files": [
+    "noop.js",
+    "package.json",
+    "app/**/*"
+  ],
+  "keywords": [
+    "tizenbrew",
+    "tizen",
+    "samsung",
+    "ai"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/disparter/aiontv.git"
+  },
+  "license": "MIT"
+}

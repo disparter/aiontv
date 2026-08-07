@@ -1,0 +1,6 @@
+# Só o módulo TizenBrew (sem secrets do monorepo)
+.env
+.env.*
+*.pem
+.DS_Store
+Thumbs.db

@@ -1,0 +1,20 @@
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: #070b14;
+  color: #e8eef8;
+  font-family: "SamsungOne", "Segoe UI", Tahoma, sans-serif;
+}
+button {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+.hidden { display: none !important; }
+img { display: block; max-width: 100%; }
