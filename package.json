@@ -1,10 +1,10 @@
 {
   "name": "aiontv",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "AI on TV — abre o thin client no PC (mesmo URL do app Internet)",
   "packageType": "mods",
   "appName": "AI on TV",
-  "websiteURL": "http://192.168.15.4:8080/tv/index.html?v=0.5.14",
+  "websiteURL": "http://192.168.15.83:8080/tv/index.html?v=0.5.14",
   "main": "noop.js",
   "keys": [
     "MediaPlay",
