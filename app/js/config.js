@@ -7,7 +7,7 @@
   window.AiOnTvConfig = {
     apiBase: httpBase,
     wsUrl: 'ws://' + host + ':' + port + '/ws/tv',
-    appVersion: '0.2.0',
+    appVersion: '0.5.11',
     pingIntervalMs: 15000,
     reconnectBaseMs: 1000,
     reconnectMaxMs: 30000
