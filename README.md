@@ -2,8 +2,8 @@
 
 Abre o thin client no seu PC (mesmo app que funciona no **Internet** da TV).
 
-`websiteURL` padrão: `http://192.168.15.4:8080/tv/index.html`  
-Se o IP do PC mudar, edite `package.json` → `websiteURL` e publique um release novo.
+`websiteURL` padrão: `http://192.168.15.4:8080/tv/index.html?v=0.5.12`  
+Release atual: **v0.4.5**. Se o IP do PC mudar, edite `package.json` → `websiteURL` e publique um release novo.
 
 **Sem secrets** neste repo.
 
