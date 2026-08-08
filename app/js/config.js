@@ -3,11 +3,14 @@
   var host = (typeof location !== 'undefined' && location.hostname) ? location.hostname : '192.168.15.4';
   var port = (typeof location !== 'undefined' && location.port) ? location.port : '8080';
   if (!port) port = '8080';
-  var httpBase = 'http://' + host + ':' + port;
+  var isHttps = (typeof location !== 'undefined' && location.protocol === 'https:');
+  var proto = isHttps ? 'https:' : 'http:';
+  var wsProto = isHttps ? 'wss:' : 'ws:';
+  var httpBase = proto + '//' + host + ':' + port;
   window.AiOnTvConfig = {
     apiBase: httpBase,
-    wsUrl: 'ws://' + host + ':' + port + '/ws/tv',
-    appVersion: '0.5.11',
+    wsUrl: wsProto + '//' + host + ':' + port + '/ws/tv',
+    appVersion: '0.5.14',
     pingIntervalMs: 15000,
     reconnectBaseMs: 1000,
     reconnectMaxMs: 30000

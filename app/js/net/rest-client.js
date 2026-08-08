@@ -51,7 +51,10 @@
           try { data = JSON.parse(raw); } catch (e) { /* ignore */ }
         }
         if (!r.ok) {
-          throw new Error((data && data.message) || ('HTTP ' + r.status));
+          var err = new Error((data && data.message) || ('HTTP ' + r.status));
+          err.status = r.status;
+          err.payload = data || {};
+          throw err;
         }
         return data || {};
       });
