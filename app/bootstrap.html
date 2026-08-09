@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=1920, height=1080, user-scalable=no"/>
+  <title>AI on TV — conectar</title>
+  <style>
+    html, body { height: 100%; margin: 0; background: #0b0d12; color: #e8ecf4; font-family: "Segoe UI", sans-serif; }
+    body { display: flex; align-items: center; justify-content: center; }
+    .box { text-align: center; max-width: 36em; padding: 2em; }
+    h1 { font-size: 2.4rem; font-weight: 600; margin: 0 0 0.4em; letter-spacing: 0.02em; }
+    #status { font-size: 1.35rem; margin: 0.6em 0; }
+    #detail { opacity: 0.65; font-size: 1.05rem; line-height: 1.45; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>AI on TV</h1>
+    <p id="status">Procurando o PC na rede…</p>
+    <p id="detail"></p>
+  </div>
+  <script>
+(function () {
+  var VERSION = '0.6.1';
+  var PORT = '8080';
+  /* Quarto (Ethernet PC) primeiro — sala Wi-Fi em seguida. localStorage reordena. */
+  var CANDIDATES = ['192.168.15.8', '192.168.15.83'];
+  var KEY = 'aiontv.lanHost';
+  var statusEl = document.getElementById('status');
+  var detailEl = document.getElementById('detail');
+  var settled = false;
+
+  function tvUrl(host) {
+    return 'http://' + host + ':' + PORT + '/tv/index.html?v=' + VERSION;
+  }
+
+  function go(host) {
+    if (settled) return;
+    settled = true;
+    try { localStorage.setItem(KEY, host); } catch (e) {}
+    statusEl.textContent = 'Conectando em ' + host + '…';
+    location.replace(tvUrl(host));
+  }
+
+  function fail() {
+    statusEl.textContent = 'Nenhum PC encontrado nesta rede.';
+    detailEl.innerHTML =
+      'Backend precisa estar ligado no PC dual-homed.<br>' +
+      'Quarto → 192.168.15.8:8080 · Sala → 192.168.15.83:8080';
+  }
+
+  function probe(host, onOk, onFail) {
+    var done = false;
+    var finish = function (ok) {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      if (ok) onOk(); else onFail();
+    };
+    var timer = setTimeout(function () { finish(false); }, 2200);
+    /* Image = mixed content passivo (CDN HTTPS → LAN HTTP) — fetch/XHR costumam bloquear. */
+    var img = new Image();
+    img.onload = function () { finish(true); };
+    img.onerror = function () { finish(false); };
+    img.src = 'http://' + host + ':' + PORT + '/tv/lan-beacon.png?t=' + Date.now();
+  }
+
+  var ordered = CANDIDATES.slice();
+  try {
+    var last = localStorage.getItem(KEY);
+    if (last) {
+      ordered = [last].concat(ordered.filter(function (h) { return h !== last; }));
+    }
+  } catch (e) {}
+
+  detailEl.textContent = ordered.join(' → ');
+  var idx = 0;
+  function next() {
+    if (settled) return;
+    if (idx >= ordered.length) {
+      fail();
+      return;
+    }
+    var host = ordered[idx++];
+    statusEl.textContent = 'Testando ' + host + '…';
+    probe(host, function () { go(host); }, next);
+  }
+  next();
+})();
+  </script>
+</body>
+</html>

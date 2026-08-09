@@ -1,6 +1,6 @@
 /* Resolve API a partir do host da página (TV/PC) — evita IP fixo errado. */
 (function () {
-  var host = (typeof location !== 'undefined' && location.hostname) ? location.hostname : '192.168.15.4';
+  var host = (typeof location !== 'undefined' && location.hostname) ? location.hostname : '192.168.15.83';
   var port = (typeof location !== 'undefined' && location.port) ? location.port : '8080';
   if (!port) port = '8080';
   var isHttps = (typeof location !== 'undefined' && location.protocol === 'https:');
@@ -10,7 +10,7 @@
   window.AiOnTvConfig = {
     apiBase: httpBase,
     wsUrl: wsProto + '//' + host + ':' + port + '/ws/tv',
-    appVersion: '0.5.14',
+    appVersion: '0.6.1',
     pingIntervalMs: 15000,
     reconnectBaseMs: 1000,
     reconnectMaxMs: 30000

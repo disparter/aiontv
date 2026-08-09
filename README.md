@@ -1,31 +1,32 @@
 # AI on TV — módulo TizenBrew
 
-Abre o thin client no seu PC (mesmo app que funciona no **Internet** da TV).
+`packageType: app` → abre `app/bootstrap.html` (CDN). O bootstrap **testa** os IPs do PC na LAN e redireciona:
 
-`websiteURL` padrão: `http://192.168.15.4:8080/tv/index.html?v=0.5.12`  
-Release atual: **v0.4.5**. Se o IP do PC mudar, edite `package.json` → `websiteURL` e publique um release novo.
+| Rede da TV | IP do PC que responde |
+|---|---|
+| Quarto (Ethernet) | `192.168.15.8:8080` |
+| Sala (Wi‑Fi) | `192.168.15.83:8080` |
+
+Release atual: **v0.6.1**. Não há mais um único `websiteURL` fixo.
 
 **Sem secrets** neste repo.
 
 ## Instalar na TV
 
-1. PC: backend ligado (`cd backend && .\gradlew.bat bootRun`).
-2. No TizenBrew, apague **Unknown Module** / módulos `aiontv` antigos.
-3. Module Manager → **Add Module** → digite:
+1. PC: backend ligado (`cd backend && .\gradlew.bat bootRun`) com as duas placas (dual-home).
+2. No TizenBrew, apague módulos `aiontv` antigos.
+3. Module Manager → **Add Module** → `disparter/aiontv`
+4. Abra **AI on TV** — deve aparecer “Testando 192.168.15.x…” e cair no thin client.
 
-```
-disparter/aiontv
-```
+## Internet (atalho sem TizenBrew)
 
-4. Abra **AI on TV** na home do TizenBrew.
+- Quarto: `http://192.168.15.8:8080/tv/index.html?v=0.6.1`
+- Sala: `http://192.168.15.83:8080/tv/index.html?v=0.6.1`
+- Autodetect: `http://<qualquer-IP-alcançável>:8080/tv/bootstrap.html`
 
-## Como funciona
+## Atualizar
 
-- `packageType: mods` + `websiteURL` → TizenBrew navega para o SPA no PC.
-- Não depende de npm nem de servir HTML pelo CDN.
-
-## Atualizar IP
-
-1. Altere `websiteURL` em `package.json`.
-2. `git commit` + `git tag` + `gh release create`.
-3. Na TV, remova e readicione o módulo (ou aguarde o TizenBrew puxar o release).
+1. Edite candidatos em `app/bootstrap.html` se os IPs do PC mudarem.
+2. Bump `version` em `package.json`.
+3. Publique release em `disparter/aiontv` + purge jsDelivr.
+4. Na TV: remova e readicione o módulo.
