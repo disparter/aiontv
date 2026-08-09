@@ -1,10 +1,10 @@
 {
   "name": "aiontv",
-  "version": "0.5.0",
-  "description": "AI on TV — abre o thin client no PC (Wi-Fi sala .83)",
+  "version": "0.6.0",
+  "description": "AI on TV — multi-device (sala Wi-Fi .83) · branch feature/multi-device-android-tv",
   "packageType": "mods",
   "appName": "AI on TV",
-  "websiteURL": "http://192.168.15.83:8080/tv/?v=0.5.0",
+  "websiteURL": "http://192.168.15.83:8080/tv/?v=0.6.0",
   "main": "noop.js",
   "keys": [
     "MediaPlay",
