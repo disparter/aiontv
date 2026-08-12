@@ -39,16 +39,33 @@
     this._ws.onopen = function () {
       self._reconnectAttempt = 0;
       self.onStatus('open');
+      var caps = self._hardwareCapabilities();
       self.send('session.hello', {
         device: {
           model: '50RU7100',
-          platform: 'tizen',
+          platform: caps.tizen ? 'tizen' : 'web',
           appVersion: (global.AiOnTvConfig && global.AiOnTvConfig.appVersion) || '0.1.0',
           screen: { w: 1920, h: 1080 }
         },
         locale: 'pt-BR',
-        capabilities: ['dpad', 'websocket', 'streaming_text'],
+        capabilities: caps.flags,
+        hardware: {
+          tizen: !!caps.tizen,
+          webapis: !!caps.webapis,
+          nativeLaunch: !!caps.nativeLaunch,
+          nativeHdmi: !!caps.nativeHdmi,
+          avplay: !!caps.avplay
+        },
         resumeToken: self.resumeToken
+      });
+      // Evento dedicado: Spring decide nativo vs macro cega do controle
+      self.send('system.capabilities', {
+        tizen: !!caps.tizen,
+        webapis: !!caps.webapis,
+        nativeLaunch: !!caps.nativeLaunch,
+        nativeHdmi: !!caps.nativeHdmi,
+        avplay: !!caps.avplay,
+        flags: caps.flags
       });
       self._flushQueue();
       self._startPing();
@@ -82,6 +99,21 @@
     this._closed = true;
     this._stopPing();
     if (this._ws) this._ws.close();
+  };
+
+  WsClient.prototype._hardwareCapabilities = function () {
+    var hw = global.AiOnTvHardware;
+    if (hw && typeof hw.probeCapabilities === 'function') {
+      try { return hw.probeCapabilities(); } catch (e) { /* fall through */ }
+    }
+    return {
+      tizen: false,
+      webapis: false,
+      nativeLaunch: false,
+      nativeHdmi: false,
+      avplay: false,
+      flags: ['dpad', 'websocket', 'streaming_text']
+    };
   };
 
   WsClient.prototype.send = function (type, payload) {

@@ -3,20 +3,45 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=1920, height=1080, user-scalable=no"/>
-  <title>AI on TV</title>
-  <link rel="stylesheet" href="css/reset.css"/>
-  <link rel="stylesheet" href="css/tv-layout.css"/>
-  <link rel="stylesheet" href="css/focus.css"/>
+  <meta name="theme-color" content="#0b1220"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="JarvisTV"/>
+  <title>JarvisTV</title>
+  <link rel="manifest" href="manifest.webmanifest"/>
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png"/>
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png"/>
+  <link rel="stylesheet" href="css/reset.css?v=0.6.39"/>
+  <link rel="stylesheet" href="css/tv-layout.css?v=0.6.39"/>
+  <link rel="stylesheet" href="css/focus.css?v=0.6.39"/>
+  <link rel="stylesheet" href="css/companion.css?v=0.6.39"/>
 </head>
 <body>
   <div id="app">
-    <!-- HOME / CATÁLOGO -->
+    <!-- HOME / CATÁLOGO (TV) -->
     <section id="screen_home" class="screen screen-home">
       <header class="topbar">
-        <div class="brand">AI on TV</div>
+        <div class="brand">JarvisTV</div>
         <div id="status_line" class="status">Conectando…</div>
+        <button type="button" class="top-btn" id="btn_search_catalog" data-focusable="true" data-action="search-catalog">Pesquisar</button>
+        <button type="button" class="top-btn" id="btn_open_categories" data-focusable="true" data-action="open-categories">Categorias</button>
+        <button type="button" class="top-btn" id="btn_open_az" data-focusable="true" data-action="open-az">A–Z</button>
+        <button type="button" class="top-btn" id="btn_companion_info" data-focusable="true" data-action="companion-info">Celular</button>
+        <button type="button" class="top-btn" id="btn_profiles" data-focusable="true" data-action="profiles">Perfil: Felipe</button>
+        <button type="button" class="top-btn" id="btn_rate" data-focusable="true" data-action="rate">★ Avaliar</button>
         <button type="button" class="top-btn" id="btn_open_chat" data-focusable="true" data-action="chat">Falar com IA</button>
       </header>
+
+      <div id="companion_banner" class="companion-banner hidden" hidden>
+        <img id="companion_qr" class="companion-qr" alt="QR Companion" width="200" height="200"/>
+        <div class="companion-banner-copy">
+          <div class="companion-banner-title">Controle pelo celular</div>
+          <div id="companion_url_text" class="companion-banner-url">…</div>
+          <div class="companion-banner-hint">Mesma Wi‑Fi · app da TV fica aberto pra jogos</div>
+        </div>
+        <button type="button" class="top-btn" id="btn_companion_close" data-focusable="true" data-action="companion-close">Fechar</button>
+      </div>
 
       <div id="hero" class="hero">
         <div class="hero-shade"></div>
@@ -26,18 +51,132 @@
           <p id="hero_overview" class="hero-overview"></p>
           <div class="hero-actions">
             <button type="button" class="cta" id="btn_play_hero" data-focusable="true" data-action="play-hero">▶ Assistir</button>
+            <button type="button" class="cta cta-ghost" id="btn_mark_watched" data-focusable="true" data-action="mark-watched">✓ Já vi</button>
+            <button type="button" class="cta cta-ghost" id="btn_rate_title" data-focusable="true" data-action="rate-title">★ Classificar</button>
             <button type="button" class="cta cta-ghost" id="btn_ask_hero" data-focusable="true" data-action="ask-hero">Perguntar à IA</button>
           </div>
+          <p class="hero-key-hint">Vermelho = já vi · Amarelo = classificar · OK = assistir</p>
         </div>
       </div>
 
       <div id="rows" class="rows" aria-label="Catálogo"></div>
     </section>
 
-    <!-- CHAT + TECLADO -->
+    <!-- Classificar título do catálogo -->
+    <section id="screen_title_rate" class="screen screen-title-rate hidden" hidden>
+      <div class="title-rate-card">
+        <p class="title-rate-label">Classificar</p>
+        <h1 id="title_rate_name" class="title-rate-name">…</h1>
+        <p id="title_rate_meta" class="title-rate-meta"></p>
+        <div class="rate-stars" id="title_rate_stars">
+          <button type="button" class="cta star-pick" id="title_rate_star_1" tabindex="0" data-focusable="true" data-action="title-rate-star" data-stars="1">★ 1</button>
+          <button type="button" class="cta star-pick" id="title_rate_star_2" tabindex="0" data-focusable="true" data-action="title-rate-star" data-stars="2">★ 2</button>
+          <button type="button" class="cta star-pick" id="title_rate_star_3" tabindex="0" data-focusable="true" data-action="title-rate-star" data-stars="3">★ 3</button>
+          <button type="button" class="cta star-pick" id="title_rate_star_4" tabindex="0" data-focusable="true" data-action="title-rate-star" data-stars="4">★ 4</button>
+          <button type="button" class="cta star-pick" id="title_rate_star_5" tabindex="0" data-focusable="true" data-action="title-rate-star" data-stars="5">★ 5</button>
+        </div>
+        <p class="title-rate-hint">Setas · OK · Back cancela · também marca como já visto</p>
+        <button type="button" class="cta cta-ghost" id="btn_title_rate_back" data-focusable="true" data-action="title-rate-back">Voltar ao catálogo</button>
+      </div>
+    </section>
+
+    <!-- A-Z BIBLIOTECA -->
+    <section id="screen_az" class="screen screen-az hidden" hidden>
+      <header class="topbar">
+        <div class="brand">A–Z</div>
+        <div id="az_status" class="status">Biblioteca…</div>
+        <button type="button" class="top-btn" id="btn_az_search" data-focusable="true" data-action="search-catalog">Pesquisar</button>
+        <button type="button" class="top-btn" id="btn_az_home" data-focusable="true" data-action="home">Home</button>
+      </header>
+      <div id="az_letters" class="az-letters" aria-label="Letras"></div>
+      <div id="az_grid" class="az-grid" aria-label="Títulos A-Z"></div>
+    </section>
+
+    <!-- CATEGORIAS CANÔNICAS -->
+    <section id="screen_categories" class="screen screen-categories hidden" hidden>
+      <header class="topbar">
+        <div class="brand">Categorias</div>
+        <div id="cat_status" class="status">Filmes · Séries · Animação…</div>
+        <button type="button" class="top-btn" id="btn_cat_az" data-focusable="true" data-action="open-az">A–Z</button>
+        <button type="button" class="top-btn" id="btn_cat_home" data-focusable="true" data-action="home">Home</button>
+      </header>
+      <div id="cat_tabs" class="az-letters cat-tabs" aria-label="Categorias"></div>
+      <div id="cat_grid" class="az-grid" aria-label="Títulos por categoria"></div>
+    </section>
+
+    <!-- PESQUISA RÁPIDA DO CATÁLOGO (não é o chat da IA) -->
+    <section id="screen_search" class="screen screen-search hidden" hidden>
+      <header class="topbar">
+        <div class="brand">Pesquisar</div>
+        <div id="search_status" class="status">Digite para filtrar</div>
+        <button type="button" class="top-btn" id="btn_search_az" data-focusable="true" data-action="open-az">A–Z</button>
+        <button type="button" class="top-btn" id="btn_search_home" data-focusable="true" data-action="home">Home</button>
+        <button type="button" class="top-btn" id="btn_search_ai" data-focusable="true" data-action="chat">IA</button>
+      </header>
+      <div class="search-layout">
+        <div class="search-composer">
+          <div id="search_preview" class="prompt-preview">Digite ↓</div>
+          <div id="search_keyboard" class="keyboard"></div>
+          <div class="composer-actions">
+            <button type="button" class="cta cta-ghost" id="btn_search_clear" data-focusable="true" data-action="search-clear">Limpar</button>
+          </div>
+        </div>
+        <div id="search_grid" class="az-grid search-grid" aria-label="Resultados"></div>
+      </div>
+    </section>
+
+    <!-- PLAYER IN-APP (jogos / filmes locais) -->
+    <section id="screen_player" class="screen screen-player hidden" hidden>
+      <div id="player_bar" class="player-bar">
+        <div id="player_title" class="player-title">Reproduzindo</div>
+        <button type="button" class="top-btn" id="btn_player_fullscreen" data-focusable="true" data-action="player-fullscreen">Fullscreen /games</button>
+        <button type="button" class="top-btn" id="btn_close_player" data-focusable="true" data-action="close-player">Voltar (Back)</button>
+      </div>
+      <p id="player_url_line" class="player-url-line"></p>
+      <iframe id="player_frame" class="player-surface" title="jogo" allow="gamepad *; fullscreen *; autoplay *"></iframe>
+      <video id="player_video" class="player-surface hidden" controls playsinline></video>
+    </section>
+
+    <!-- PERFIS DA CASA / GERENCIAR -->
+    <section id="screen_profiles" class="screen screen-profiles hidden" hidden>
+      <header class="topbar">
+        <div class="brand">Gerenciar perfis</div>
+        <div id="profile_status" class="status">Foto · matriz · dispositivos</div>
+        <button type="button" class="top-btn" id="btn_back_profiles" data-focusable="true" data-action="home">Catálogo</button>
+      </header>
+      <div class="profiles-manage" id="profiles_manage_scroll">
+        <div id="people_list" class="profile-hub profile-hub-manage" aria-label="Perfis"></div>
+        <div class="matrix-panel">
+          <h2 class="matrix-sub">Escolher avatar</h2>
+          <p class="matrix-hint">Setas · OK — pintados locais (estilo streaming). Companion pode usar URL.</p>
+          <div id="avatar_picker" class="avatar-picker" aria-label="Avatares"></div>
+          <div class="avatar-edit-row avatar-edit-advanced" hidden>
+            <input id="avatar_url_input" class="avatar-url-input" type="text" placeholder="URL da foto (companion)" />
+            <button type="button" class="cta" id="btn_save_avatar" data-focusable="true" data-action="save-avatar">Salvar URL</button>
+          </div>
+          <h2 id="matrix_title">Matriz nos apps</h2>
+          <p class="matrix-hint">Posição do perfil no app (1 = primeiro). Use − / + para calibrar.</p>
+          <div id="matrix_table" class="matrix-table"></div>
+          <h2 class="matrix-sub">Dispositivos deste perfil</h2>
+          <p class="matrix-hint">Marque os aparelhos que este perfil pode usar. ↓ pra chegar aqui.</p>
+          <div id="devices_list" class="devices-list"></div>
+          <h2 class="matrix-sub">Casa · quartos · tipo de TV</h2>
+          <p class="matrix-hint">OK em Tipo: Tizen ↔ Android TV. OK em Quarto: sala / quarto / mãe / micael.</p>
+          <div id="house_devices" class="house-devices"></div>
+          <p id="device_line" class="device-line">Ativo: Sala</p>
+          <h2 class="matrix-sub">Biblioteca de jogos</h2>
+          <p class="matrix-hint">Home só mostra plataformas calibradas. PS5/Switch = manual. Steam = sync oficial (API key).</p>
+          <p id="games_lib_status" class="matrix-hint">Carregando…</p>
+          <div id="games_lib_platforms" class="games-lib-platforms"></div>
+          <div id="games_lib_list" class="games-lib-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHAT + TECLADO (TV) -->
     <section id="screen_chat" class="screen screen-chat hidden" hidden>
       <header class="topbar">
-        <div class="brand">AI on TV</div>
+        <div class="brand">JarvisTV</div>
         <div id="chat_status" class="status">Pronto</div>
         <button type="button" class="top-btn" id="btn_back_catalog" data-focusable="true" data-action="home">Catálogo</button>
       </header>
@@ -45,6 +184,12 @@
       <div class="chat-layout">
         <div id="chat_log" class="chat-log" aria-live="polite"></div>
         <div class="composer">
+          <div id="quick_chips" class="quick-chips">
+            <button type="button" class="chip" id="chip_serie" data-focusable="true" data-action="chip" data-prompt="Me sugere algo pra assistir">Sugere série</button>
+            <button type="button" class="chip" id="chip_jogo" data-focusable="true" data-action="chip" data-prompt="Me sugere um jogo">Sugere jogo</button>
+            <button type="button" class="chip" id="chip_netflix" data-focusable="true" data-action="chip" data-prompt="Abre Netflix">Abre Netflix</button>
+            <button type="button" class="chip" id="chip_hub" data-focusable="true" data-action="chip" data-prompt="Abre o hub de jogos">Hub de jogos</button>
+          </div>
           <div id="prompt_preview" class="prompt-preview">Digite com o teclado ↓</div>
           <div id="keyboard" class="keyboard"></div>
           <div class="composer-actions">
@@ -54,16 +199,381 @@
         </div>
       </div>
     </section>
+
+    <!-- COMPANION (celular) — controla a TV -->
+    <!-- LOGIN TV: quem assiste (hub de perfis) -->
+    <section id="screen_tv_login" class="screen screen-tv-login hidden" hidden>
+      <div class="who-watch">
+        <div class="who-watch-brand">JarvisTV</div>
+        <h1 class="who-watch-title" id="tv_login_hint">Quem assiste nesta TV?</h1>
+        <div id="tv_login_people" class="profile-hub" aria-label="Perfis"></div>
+        <button type="button" class="profile-manage-btn" id="btn_tv_manage_profiles"
+                data-focusable="true" data-action="manage-profiles">Gerenciar perfis</button>
+        <p id="tv_login_status" class="who-watch-hint">Setas · OK para entrar</p>
+      </div>
+    </section>
+
+    <section id="screen_companion" class="screen screen-companion hidden" hidden>
+      <div id="companion_login_gate" class="companion-login-gate" hidden>
+        <div class="companion-login-card">
+          <div class="companion-brand">JarvisTV</div>
+          <h2 id="companion_login_title">Quem é você?</h2>
+          <p id="companion_login_hint" class="companion-hint"></p>
+          <div id="companion_login_choices" class="companion-people"></div>
+          <button type="button" id="companion_login_back" class="companion-btn" hidden>Voltar</button>
+        </div>
+      </div>
+      <header class="companion-top">
+        <div class="companion-brand">JarvisTV · Companion</div>
+        <div id="companion_sub" class="companion-sub">Escolha um perfil</div>
+        <div id="companion_status" class="companion-status" hidden aria-live="polite"></div>
+      </header>
+      <div id="companion_toast" class="companion-toast" hidden role="status" aria-live="polite"></div>
+
+      <nav class="companion-tabs" aria-label="Companion">
+        <button type="button" class="companion-tab active" data-tab="chat">Chat</button>
+        <button type="button" class="companion-tab" data-tab="remote">Controle</button>
+        <button type="button" class="companion-tab" data-tab="catalog">Catálogo</button>
+        <button type="button" class="companion-tab" data-tab="profiles">Perfil</button>
+        <button type="button" class="companion-tab" data-tab="hdmi">HDMI</button>
+        <button type="button" class="companion-tab" data-tab="rate">Feedback</button>
+      </nav>
+
+      <div id="companion_panel_chat" class="companion-panel active">
+        <div id="companion_ack_card" class="companion-ack hidden" hidden>
+          <p id="companion_ack_text" class="companion-hint">…</p>
+          <div class="companion-quick">
+            <button type="button" class="companion-btn" id="btn_ack_yes">Deu certo / Continuar</button>
+            <button type="button" class="companion-btn" id="btn_ack_no">Falhou / Pular título</button>
+          </div>
+        </div>
+        <p class="companion-hint">Fale ou digite — Netflix, volume, jogos e HDMI vão pra TV. Mantenha o app aberto na televisão.</p>
+        <div id="companion_chat_log" class="companion-chat-log"></div>
+        <div class="companion-chips">
+          <button type="button" class="companion-chip" data-prompt="Abre Netflix">Netflix</button>
+          <button type="button" class="companion-chip" data-prompt="Abre Spotify">Spotify</button>
+          <button type="button" class="companion-chip" data-prompt="Abre YouTube">YouTube</button>
+          <button type="button" class="companion-chip" data-prompt="Abre o hub de jogos">Jogos</button>
+          <button type="button" class="companion-chip" data-prompt="Troca para o PS5">PS5</button>
+          <button type="button" class="companion-chip" data-prompt="Troca para o Switch">Switch</button>
+          <button type="button" class="companion-chip" data-prompt="Me sugere algo pra assistir">Sugere</button>
+          <button type="button" class="companion-chip" data-prompt="continua">Continua</button>
+        </div>
+        <button type="button" class="companion-btn companion-mic" id="btn_companion_mic"
+                aria-pressed="false">Toque pra falar</button>
+        <p id="companion_mic_hint" class="companion-hint">Toque uma vez pra gravar, toque de novo pra enviar.</p>
+        <form id="companion_form" class="companion-composer">
+          <input id="companion_input" type="text" enterkeyhint="send" autocomplete="off"
+                 placeholder="Ex.: abre Stranger Things na Netflix" />
+          <button type="submit">Enviar</button>
+        </form>
+      </div>
+
+      <div id="companion_panel_remote" class="companion-panel companion-panel-remote">
+        <div class="remote-shell">
+          <div class="remote-dpad" role="group" aria-label="Direcional">
+            <button type="button" class="dpad-btn dpad-up" data-tv-key="KEY_UP" aria-label="Cima">
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M7.4 14.6 12 10l4.6 4.6 1.4-1.4L12 7.2 6 13.2z"/></svg>
+            </button>
+            <button type="button" class="dpad-btn dpad-left" data-tv-key="KEY_LEFT" aria-label="Esquerda">
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M14.6 7.4 10 12l4.6 4.6-1.4 1.4L7.2 12 13.2 6z"/></svg>
+            </button>
+            <button type="button" class="dpad-btn dpad-ok" data-tv-key="KEY_ENTER" aria-label="OK">OK</button>
+            <button type="button" class="dpad-btn dpad-right" data-tv-key="KEY_RIGHT" aria-label="Direita">
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M9.4 7.4 14 12l-4.6 4.6 1.4 1.4L16.8 12 10.8 6z"/></svg>
+            </button>
+            <button type="button" class="dpad-btn dpad-down" data-tv-key="KEY_DOWN" aria-label="Baixo">
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M7.4 9.4 12 14l4.6-4.6 1.4 1.4L12 16.8 6 10.8z"/></svg>
+            </button>
+          </div>
+
+          <button type="button" class="remote-back companion-touch" data-tv-key="KEY_RETURN" aria-label="Voltar">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg>
+            <span>Voltar</span>
+          </button>
+
+          <div class="remote-pill" role="group" aria-label="Volume">
+            <button type="button" class="pill-btn companion-touch" data-tv-key="KEY_VOLDOWN" aria-label="Volume menos">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M5 10v4h3l4 4V6L8 10H5zm11.5 2a3.5 3.5 0 0 0-1.9-3.1v6.2A3.4 3.4 0 0 0 16.5 12z"/></svg>
+              <span class="pill-mark">−</span>
+            </button>
+            <button type="button" class="pill-btn companion-touch" data-tv-key="KEY_MUTE" aria-label="Mudo">
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M16.5 12a3.5 3.5 0 0 0-1.9-3.1v2.06l1.84 1.84c.04-.26.06-.52.06-.8zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A7.9 7.9 0 0 0 21 12c0-3.54-2.39-6.53-5.66-7.4v2.1A5.5 5.5 0 0 1 19 12zM4.27 3 3 4.27 7.73 9H5v6h3l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.1a8.9 8.9 0 0 0 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4 9.91 6.09 12 8.18V4z"/></svg>
+            </button>
+            <button type="button" class="pill-btn companion-touch" data-tv-key="KEY_VOLUP" aria-label="Volume mais">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M5 10v4h3l4 4V6L8 10H5zm8.5 2c0-1.77-1-3.29-2.5-4.03v8.05A4.5 4.5 0 0 0 13.5 12zM14 3.23v2.06A7 7 0 0 1 19 12a7 7 0 0 1-5 6.71v2.06A9 9 0 0 0 21 12a9 9 0 0 0-7-8.77z"/></svg>
+              <span class="pill-mark">+</span>
+            </button>
+          </div>
+
+          <div class="remote-system" role="group" aria-label="Sistema">
+            <button type="button" class="sys-btn companion-touch" data-tv-key="KEY_HOME" aria-label="Home">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+              <span>Home</span>
+            </button>
+            <button type="button" class="sys-btn companion-touch" data-tv-key="KEY_SOURCE" aria-label="Fonte">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg>
+              <span>Fonte</span>
+            </button>
+            <button type="button" class="sys-btn companion-touch" data-prompt="home" aria-label="Smart Hub">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
+              <span>Hub</span>
+            </button>
+          </div>
+
+          <div class="remote-apps" role="group" aria-label="Apps">
+            <button type="button" class="app-btn app-netflix companion-touch" data-prompt="Abre Netflix">Netflix</button>
+            <button type="button" class="app-btn app-prime companion-touch" data-prompt="Abre Prime Video">Prime</button>
+            <button type="button" class="app-btn app-disney companion-touch" data-prompt="Abre Disney">Disney+</button>
+            <button type="button" class="app-btn app-max companion-touch" data-prompt="Abre Max">Max</button>
+            <button type="button" class="app-btn app-spotify companion-touch" data-prompt="Abre Spotify">Spotify</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="companion_panel_catalog" class="companion-panel">
+        <div class="companion-search-bar">
+          <input type="search" id="companion_catalog_search"
+                 placeholder="Buscar na biblioteca, Netflix, Max..."
+                 autocomplete="off" enterkeyhint="search" />
+        </div>
+        <p class="companion-hint">Toque no pôster pra abrir na TV. Estrelas abaixo = nota pra IA (1–5).</p>
+        <p id="companion_catalog_status" class="companion-hint companion-catalog-status" hidden></p>
+        <div id="companion_catalog" class="companion-catalog"></div>
+      </div>
+
+      <div id="companion_panel_profiles" class="companion-panel">
+        <section class="hh-user">
+          <button type="button" class="companion-btn hh-switch-btn" id="btn_companion_switch">Trocar perfil / TV</button>
+          <p id="companion_profile_line" class="hh-active-line"></p>
+
+          <h3 class="hh-section-title">Controlar agora</h3>
+          <div id="companion_devices" class="hh-device-cards"></div>
+
+          <div id="companion_pin_card" class="hh-pin-modal hidden" hidden>
+            <p id="companion_pin_text" class="hh-pin-title">TV protegida</p>
+            <form id="companion_pin_form" class="hh-pin-form">
+              <input id="companion_pin_input" type="password" inputmode="numeric" maxlength="4"
+                     pattern="[0-9]*" autocomplete="one-time-code" placeholder="PIN 4 dígitos" />
+              <div class="hh-pin-actions">
+                <button type="button" class="companion-btn hh-btn-secondary" id="btn_companion_pin_cancel">Cancelar</button>
+                <button type="submit" class="companion-btn">Desbloquear</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <details class="hh-admin" id="companion_admin_details">
+          <summary>Administração da Casa</summary>
+          <div id="hh_admin_gate" class="hh-admin-gate">
+            <p class="companion-hint">Digite o PIN mestre para configurar cômodos, permissões e pareamento.</p>
+            <form id="hh_admin_unlock_form" class="hh-pin-form">
+              <input id="hh_admin_unlock_pin" type="password" inputmode="numeric" maxlength="4"
+                     pattern="[0-9]*" placeholder="PIN mestre" autocomplete="one-time-code" />
+              <button type="submit" class="companion-btn">Desbloquear admin</button>
+            </form>
+          </div>
+          <div id="hh_admin_body" class="hh-admin-body" hidden>
+            <section class="hh-admin-block">
+              <h3 class="hh-section-title">Perfis</h3>
+              <div id="companion_people" class="hh-people-row"></div>
+              <p class="companion-hint">Permissões do perfil selecionado</p>
+              <div id="companion_allow_devices" class="hh-allow-list"></div>
+              <p class="companion-hint">Calibrar avatar nos apps (− / +)</p>
+              <div id="companion_matrix" class="companion-matrix"></div>
+            </section>
+
+            <section class="hh-admin-block">
+              <h3 class="hh-section-title">Dispositivos</h3>
+              <div id="hh_admin_devices" class="hh-admin-devices"></div>
+              <div id="hh_device_editor" class="hh-device-editor" hidden>
+                <h4 id="hh_device_editor_title" class="hh-section-title">Editar aparelho</h4>
+                <form id="hh_device_edit_form" class="hh-edit-form">
+                  <input type="hidden" id="hh_edit_device_id" />
+                  <label class="calib-field">
+                    <span>Nome</span>
+                    <input id="hh_edit_name" type="text" autocomplete="off" />
+                  </label>
+                  <label class="calib-field">
+                    <span>IP / host</span>
+                    <input id="hh_edit_host" type="text" inputmode="decimal" autocomplete="off" placeholder="192.168.x.x" />
+                  </label>
+                  <label class="calib-field">
+                    <span>Cômodo</span>
+                    <select id="hh_edit_room">
+                      <option value="living">Sala</option>
+                      <option value="bedroom">Quarto</option>
+                      <option value="mother">Quarto da Mãe</option>
+                      <option value="micael">Micael</option>
+                    </select>
+                  </label>
+                  <label class="calib-field">
+                    <span>PIN do aparelho</span>
+                    <input id="hh_edit_device_pin" type="password" inputmode="numeric" maxlength="4" placeholder="4 dígitos; vazio remove" />
+                  </label>
+                  <div class="hh-edit-actions">
+                    <button type="submit" class="companion-btn">Salvar</button>
+                    <button type="button" class="companion-btn hh-btn-secondary" id="hh_btn_pair_device">Parear TV Samsung</button>
+                    <button type="button" class="companion-btn hh-btn-secondary" id="hh_btn_close_editor">Fechar</button>
+                  </div>
+                </form>
+              </div>
+            </section>
+
+            <section class="hh-admin-block">
+              <h3 class="hh-section-title">Biblioteca de Jogos</h3>
+              <p class="companion-hint">PS5/Switch: adicione via busca RAWG. Steam: sincronize pela API oficial.</p>
+              <p id="hh_games_status" class="companion-hint" hidden></p>
+              <div id="hh_games_platforms" class="hh-games-platforms"></div>
+              <div id="hh_games_list" class="hh-games-list"></div>
+            </section>
+
+            <section class="hh-admin-block">
+              <h3 class="hh-section-title">PIN mestre</h3>
+              <form id="companion_master_form" class="hh-pin-form">
+                <input id="companion_master_pin" type="password" inputmode="numeric" maxlength="4"
+                       placeholder="Novo PIN mestre (4 dígitos)" />
+                <button type="submit" class="companion-btn">Salvar PIN mestre</button>
+              </form>
+            </section>
+          </div>
+        </details>
+      </div>
+
+      <div id="modal_add_game" class="hh-game-modal" hidden>
+        <div class="hh-game-modal-sheet">
+          <header class="hh-game-modal-top">
+            <h3 id="game_search_title">Adicionar jogo</h3>
+            <button type="button" class="companion-btn hh-btn-secondary" id="btn_game_modal_close">Fechar</button>
+          </header>
+          <input type="search" id="game_search_input" placeholder="Digite o nome do jogo..."
+                 autocomplete="off" enterkeyhint="search" />
+          <p id="game_search_hint" class="companion-hint">Buscando na RAWG…</p>
+          <div id="game_search_results" class="hh-game-results"></div>
+        </div>
+      </div>
+
+      <div id="companion_panel_hdmi" class="companion-panel">
+        <div class="calib-shell">
+          <p class="companion-hint">Escolha o console e a porta física, teste na TV e só salve se a imagem estiver certa.</p>
+
+          <section class="calib-card" aria-labelledby="calib_step1_title">
+            <h3 id="calib_step1_title" class="calib-card-title">1. Aparelho e porta</h3>
+            <label class="calib-field" for="calib_device">
+              <span>Dispositivo</span>
+              <select id="calib_device"></select>
+            </label>
+            <label class="calib-field" for="calib_hdmi_port">
+              <span>Porta HDMI</span>
+              <select id="calib_hdmi_port">
+                <option value="1">HDMI 1</option>
+                <option value="2">HDMI 2</option>
+                <option value="3">HDMI 3</option>
+                <option value="4">HDMI 4</option>
+              </select>
+            </label>
+          </section>
+
+          <details class="calib-advanced">
+            <summary>Ajuste fino (avançado)</summary>
+            <div class="calib-advanced-body">
+              <label class="calib-field" for="calib_base_offset">
+                <span>Offset base</span>
+                <input type="number" id="calib_base_offset" value="0" step="1" inputmode="numeric" />
+                <small>Use −1 se a TV sempre passa do ponto certo.</small>
+              </label>
+              <label class="calib-field" for="calib_left_reset">
+                <span>Left reset</span>
+                <input type="number" id="calib_left_reset" value="8" min="0" max="20" step="1" inputmode="numeric" />
+                <small>Toques à esquerda para voltar ao início do menu Fonte.</small>
+              </label>
+            </div>
+          </details>
+
+          <section class="calib-actions">
+            <button type="button" class="companion-btn calib-btn-primary" id="btn_calib_test">Testar na TV</button>
+            <p id="calib_status" class="companion-hint" aria-live="polite"></p>
+            <div id="calib_feedback_area" class="calib-feedback" hidden>
+              <p class="calib-feedback-q">A imagem do console apareceu na tela?</p>
+              <div class="calib-feedback-actions">
+                <button type="button" class="companion-btn calib-btn-save" id="btn_calib_save">Sim, Salvar</button>
+                <button type="button" class="companion-btn calib-btn-adjust" id="btn_calib_adjust">Não, Ajustar</button>
+              </div>
+            </div>
+            <button type="button" class="calib-link" id="btn_calib_open_saved">Abrir console já salvo</button>
+          </section>
+        </div>
+      </div>
+
+      <div id="companion_panel_rate" class="companion-panel">
+        <p class="companion-hint">Central de feedback: note o que falhou na TV e veja o histórico que a IA usa pra aprender.</p>
+        <p id="companion_rate_summary" class="companion-hint">Carregando…</p>
+        <div id="companion_audit_fails" class="companion-audit"></div>
+        <div class="companion-stars" id="companion_stars">
+          <button type="button" class="star-btn" data-stars="1">★</button>
+          <button type="button" class="star-btn" data-stars="2">★</button>
+          <button type="button" class="star-btn" data-stars="3">★</button>
+          <button type="button" class="star-btn" data-stars="4">★</button>
+          <button type="button" class="star-btn" data-stars="5">★</button>
+        </div>
+        <form id="companion_rate_form" class="companion-composer feedback-composer">
+          <div class="feedback-input-row">
+            <input id="companion_rate_comment" type="text" enterkeyhint="send" autocomplete="off"
+                   placeholder="O que falhou? Ex.: Netflix preso no login" />
+            <button type="button" class="feedback-mic" id="btn_feedback_voice"
+                    aria-pressed="false" aria-label="Falar feedback">
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+                <path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11h-2z"/>
+              </svg>
+            </button>
+          </div>
+          <button type="submit">Enviar avaliação</button>
+        </form>
+        <p id="feedback_voice_hint" class="companion-hint">Toque no mic pra ditar o comentário (e enviar comando pra TV).</p>
+        <div class="history-feed-container">
+          <h3 class="history-feed-title">Suas avaliações recentes (contexto da IA)</h3>
+          <ul id="feedback_history_list" class="history-feed-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- AVALIAÇÃO (TV) -->
+    <section id="screen_rate" class="screen screen-rate hidden" hidden>
+      <header class="topbar">
+        <div class="brand">Avaliar experiência</div>
+        <div id="rate_status" class="status">Quantas estrelas?</div>
+        <button type="button" class="top-btn" id="btn_back_rate" data-focusable="true" data-action="home">Catálogo</button>
+      </header>
+      <div class="rate-layout">
+        <p id="rate_summary" class="rate-summary">…</p>
+        <div id="rate_fails" class="rate-fails"></div>
+        <div class="rate-stars" id="rate_stars">
+          <button type="button" class="cta star-pick" id="rate_star_1" tabindex="0" data-focusable="true" data-action="rate-star" data-stars="1">★ 1</button>
+          <button type="button" class="cta star-pick" id="rate_star_2" tabindex="0" data-focusable="true" data-action="rate-star" data-stars="2">★ 2</button>
+          <button type="button" class="cta star-pick" id="rate_star_3" tabindex="0" data-focusable="true" data-action="rate-star" data-stars="3">★ 3</button>
+          <button type="button" class="cta star-pick" id="rate_star_4" tabindex="0" data-focusable="true" data-action="rate-star" data-stars="4">★ 4</button>
+          <button type="button" class="cta star-pick" id="rate_star_5" tabindex="0" data-focusable="true" data-action="rate-star" data-stars="5">★ 5</button>
+        </div>
+        <p class="rate-hint">Use as setas e OK, ou teclas 1–5. 5★ = tudo certo. Menos = descreva no companion.</p>
+      </div>
+    </section>
   </div>
 
-  <script src="js/config.js?v=0.3.0"></script>
-  <script src="js/remote/key-map.js?v=0.3.0"></script>
-  <script src="js/remote/focus-manager.js?v=0.3.0"></script>
-  <script src="js/net/rest-client.js?v=0.3.0"></script>
-  <script src="js/net/ws-client.js?v=0.3.0"></script>
-  <script src="js/ui/keyboard.js?v=0.3.0"></script>
-  <script src="js/ui/catalog-view.js?v=0.3.0"></script>
-  <script src="js/ui/renderer.js?v=0.3.0"></script>
-  <script src="js/main.js?v=0.3.0"></script>
+  <script src="js/config.js?v=0.6.39"></script>
+  <script src="js/companion.js?v=0.6.39"></script>
+  <script src="js/hw/tizen-adapter.js?v=0.6.39"></script>
+  <script src="js/hw/app-launcher.js?v=0.6.39"></script>
+  <script src="js/hw/hdmi-controller.js?v=0.6.39"></script>
+  <script src="js/hw/avplay-wrapper.js?v=0.6.39"></script>
+  <script src="js/remote/key-map.js?v=0.6.39"></script>
+  <script src="js/remote/focus-manager.js?v=0.6.39"></script>
+  <script src="js/net/rest-client.js?v=0.6.39"></script>
+  <script src="js/net/ws-client.js?v=0.6.39"></script>
+  <script src="js/ui/keyboard.js?v=0.6.39"></script>
+  <script src="js/ui/catalog-view.js?v=0.6.39"></script>
+  <script src="js/ui/catalog-browse.js?v=0.6.39"></script>
+  <script src="js/ui/renderer.js?v=0.6.39"></script>
+  <script src="js/main.js?v=0.6.39"></script>
 </body>
 </html>
+

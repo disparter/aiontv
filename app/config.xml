@@ -13,6 +13,14 @@
   <description>AI thin client for Samsung Tizen TV</description>
   <tizen:privilege name="http://tizen.org/privilege/internet"/>
   <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>
+  <!-- HAL nativo: deep-link apps + HDMI absoluto (só vale em .wgt assinado; TizenBrew URL degrada) -->
+  <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
+  <tizen:privilege name="http://tizen.org/privilege/tv.window"/>
+  <!-- avplay: player de hardware para mídia pesada -->
+  <tizen:privilege name="http://developer.samsung.com/privilege/avplay"/>
+  <!-- Futuro .wgt: leitura USB na TV (não funciona no Internet/TizenBrew URL) -->
+  <tizen:privilege name="http://tizen.org/privilege/filesystem.read"/>
+  <tizen:privilege name="http://tizen.org/privilege/externalstorage"/>
   <tizen:profile name="tv-samsung"/>
   <access origin="*" subdomains="true"/>
   <tizen:metadata key="http://samsung.com/tv/metadata/devel.api.version" value="2.4"/>

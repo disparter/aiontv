@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=1920, height=1080, user-scalable=no"/>
-  <title>AI on TV — conectar</title>
+  <title>JarvisTV — conectar</title>
   <style>
     html, body { height: 100%; margin: 0; background: #0b0d12; color: #e8ecf4; font-family: "Segoe UI", sans-serif; }
     body { display: flex; align-items: center; justify-content: center; }
@@ -15,23 +15,37 @@
 </head>
 <body>
   <div class="box">
-    <h1>AI on TV</h1>
+    <h1>JarvisTV</h1>
     <p id="status">Procurando o PC na rede…</p>
     <p id="detail"></p>
   </div>
   <script>
 (function () {
-  var VERSION = '0.6.1';
+  var VERSION = '0.6.39';
   var PORT = '8080';
-  /* Quarto (Ethernet PC) primeiro — sala Wi-Fi em seguida. localStorage reordena. */
   var CANDIDATES = ['192.168.15.8', '192.168.15.83'];
   var KEY = 'aiontv.lanHost';
   var statusEl = document.getElementById('status');
   var detailEl = document.getElementById('detail');
   var settled = false;
+  var deviceId = '';
+  try {
+    deviceId = new URLSearchParams(location.search || '').get('deviceId') || '';
+  } catch (e) { /* */ }
+
+  function preferredHostForDevice() {
+    var d = (deviceId || '').toLowerCase();
+    if (d.indexOf('bedroom') >= 0 || d.indexOf('quarto') >= 0) return '192.168.15.8';
+    if (d.indexOf('living') >= 0 || d.indexOf('sala') >= 0 || d.indexOf('mother') >= 0) {
+      return '192.168.15.83';
+    }
+    return '';
+  }
 
   function tvUrl(host) {
-    return 'http://' + host + ':' + PORT + '/tv/index.html?v=' + VERSION;
+    var q = '?v=' + VERSION;
+    if (deviceId) q += '&deviceId=' + encodeURIComponent(deviceId);
+    return 'http://' + host + ':' + PORT + '/tv/index.html' + q;
   }
 
   function go(host) {
@@ -45,8 +59,8 @@
   function fail() {
     statusEl.textContent = 'Nenhum PC encontrado nesta rede.';
     detailEl.innerHTML =
-      'Backend precisa estar ligado no PC dual-homed.<br>' +
-      'Quarto → 192.168.15.8:8080 · Sala → 192.168.15.83:8080';
+      'Backend precisa estar ligado no PC (rede local).<br>' +
+      'Confira os hosts em bootstrap.html ou abra /tv/ direto pelo IP do PC.';
   }
 
   function probe(host, onOk, onFail) {
@@ -58,20 +72,25 @@
       if (ok) onOk(); else onFail();
     };
     var timer = setTimeout(function () { finish(false); }, 2200);
-    /* Image = mixed content passivo (CDN HTTPS → LAN HTTP) — fetch/XHR costumam bloquear. */
     var img = new Image();
     img.onload = function () { finish(true); };
     img.onerror = function () { finish(false); };
     img.src = 'http://' + host + ':' + PORT + '/tv/lan-beacon.png?t=' + Date.now();
   }
 
+  // deviceId manda: TV do quarto não deve preferir o NIC da sala (cache localStorage).
   var ordered = CANDIDATES.slice();
-  try {
-    var last = localStorage.getItem(KEY);
-    if (last) {
-      ordered = [last].concat(ordered.filter(function (h) { return h !== last; }));
-    }
-  } catch (e) {}
+  var prefer = preferredHostForDevice();
+  if (prefer) {
+    ordered = [prefer].concat(ordered.filter(function (h) { return h !== prefer; }));
+  } else {
+    try {
+      var last = localStorage.getItem(KEY);
+      if (last) {
+        ordered = [last].concat(ordered.filter(function (h) { return h !== last; }));
+      }
+    } catch (e) {}
+  }
 
   detailEl.textContent = ordered.join(' → ');
   var idx = 0;

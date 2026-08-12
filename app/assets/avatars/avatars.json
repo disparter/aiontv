@@ -1,0 +1,149 @@
+{
+  "ok": true,
+  "avatars": [
+    {
+      "id": "av-01-smile",
+      "file": "av-01-smile.png",
+      "label": "Sorriso",
+      "url": "assets/avatars/av-01-smile.png"
+    },
+    {
+      "id": "av-02-cool",
+      "file": "av-02-cool.png",
+      "label": "Óculos",
+      "url": "assets/avatars/av-02-cool.png"
+    },
+    {
+      "id": "av-03-wink",
+      "file": "av-03-wink.png",
+      "label": "Piscada",
+      "url": "assets/avatars/av-03-wink.png"
+    },
+    {
+      "id": "av-04-fox",
+      "file": "av-04-fox.png",
+      "label": "Raposa",
+      "url": "assets/avatars/av-04-fox.png"
+    },
+    {
+      "id": "av-05-cat",
+      "file": "av-05-cat.png",
+      "label": "Gato",
+      "url": "assets/avatars/av-05-cat.png"
+    },
+    {
+      "id": "av-06-owl",
+      "file": "av-06-owl.png",
+      "label": "Coruja",
+      "url": "assets/avatars/av-06-owl.png"
+    },
+    {
+      "id": "av-07-rings",
+      "file": "av-07-rings.png",
+      "label": "Anéis",
+      "url": "assets/avatars/av-07-rings.png"
+    },
+    {
+      "id": "av-08-star",
+      "file": "av-08-star.png",
+      "label": "Estrela",
+      "url": "assets/avatars/av-08-star.png"
+    },
+    {
+      "id": "av-09-smile",
+      "file": "av-09-smile.png",
+      "label": "Sorriso 2",
+      "url": "assets/avatars/av-09-smile.png"
+    },
+    {
+      "id": "av-10-cool",
+      "file": "av-10-cool.png",
+      "label": "Óculos 2",
+      "url": "assets/avatars/av-10-cool.png"
+    },
+    {
+      "id": "av-11-wink",
+      "file": "av-11-wink.png",
+      "label": "Piscada 2",
+      "url": "assets/avatars/av-11-wink.png"
+    },
+    {
+      "id": "av-12-fox",
+      "file": "av-12-fox.png",
+      "label": "Raposa 2",
+      "url": "assets/avatars/av-12-fox.png"
+    },
+    {
+      "id": "av-13-cat",
+      "file": "av-13-cat.png",
+      "label": "Gato 2",
+      "url": "assets/avatars/av-13-cat.png"
+    },
+    {
+      "id": "av-14-owl",
+      "file": "av-14-owl.png",
+      "label": "Coruja 2",
+      "url": "assets/avatars/av-14-owl.png"
+    },
+    {
+      "id": "av-15-rings",
+      "file": "av-15-rings.png",
+      "label": "Anéis 2",
+      "url": "assets/avatars/av-15-rings.png"
+    },
+    {
+      "id": "av-16-star",
+      "file": "av-16-star.png",
+      "label": "Estrela 2",
+      "url": "assets/avatars/av-16-star.png"
+    },
+    {
+      "id": "av-17-smile",
+      "file": "av-17-smile.png",
+      "label": "Sorriso 3",
+      "url": "assets/avatars/av-17-smile.png"
+    },
+    {
+      "id": "av-18-cool",
+      "file": "av-18-cool.png",
+      "label": "Óculos 3",
+      "url": "assets/avatars/av-18-cool.png"
+    },
+    {
+      "id": "av-19-wink",
+      "file": "av-19-wink.png",
+      "label": "Piscada 3",
+      "url": "assets/avatars/av-19-wink.png"
+    },
+    {
+      "id": "av-20-fox",
+      "file": "av-20-fox.png",
+      "label": "Raposa 3",
+      "url": "assets/avatars/av-20-fox.png"
+    },
+    {
+      "id": "av-21-cat",
+      "file": "av-21-cat.png",
+      "label": "Gato 3",
+      "url": "assets/avatars/av-21-cat.png"
+    },
+    {
+      "id": "av-22-owl",
+      "file": "av-22-owl.png",
+      "label": "Coruja 3",
+      "url": "assets/avatars/av-22-owl.png"
+    },
+    {
+      "id": "av-23-rings",
+      "file": "av-23-rings.png",
+      "label": "Anéis 3",
+      "url": "assets/avatars/av-23-rings.png"
+    },
+    {
+      "id": "av-24-star",
+      "file": "av-24-star.png",
+      "label": "Estrela 3",
+      "url": "assets/avatars/av-24-star.png"
+    }
+  ]
+}

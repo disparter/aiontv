@@ -8,7 +8,7 @@
       if (!op || !op.op) continue;
       if (op.op === 'set_text' && op.id) {
         var el = document.getElementById(op.id);
-        if (el) el.textContent = op.text || '';
+        if (el) el.textContent = op.text || op.value || '';
       }
       if (op.op === 'focus' && op.id && focus) {
         focus.focus(op.id);

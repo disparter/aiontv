@@ -1,9 +1,9 @@
 {
   "name": "aiontv",
-  "version": "0.6.1",
-  "description": "AI on TV — dual-LAN bootstrap (probe .8 quarto / .83 sala)",
+  "version": "0.6.39",
+  "description": "JarvisTV — dual-LAN bootstrap (probe .8 quarto / .83 sala)",
   "packageType": "app",
-  "appName": "AI on TV",
+  "appName": "JarvisTV",
   "appPath": "app/bootstrap.html",
   "main": "noop.js",
   "keys": [

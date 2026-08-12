@@ -11,3 +11,11 @@
 .tile.focused {
   transform: scale(1.1);
 }
+
+.star-pick.focused,
+.star-pick:focus {
+  border-color: #ffe08a !important;
+  box-shadow: 0 0 0 5px rgba(255, 224, 138, 0.55);
+  background: #3a2f12;
+  transform: scale(1.12);
+}
