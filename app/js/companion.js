@@ -23,7 +23,7 @@
       search += (search.indexOf('?') === 0 ? '&' : '?') + 'mode=companion';
     }
     if (search.indexOf('v=') < 0) {
-      search += '&v=0.6.39';
+      search += '&v=0.6.40';
     }
     return 'https://' + host + ':8443' + path + search;
   }

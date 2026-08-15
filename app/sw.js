@@ -1,5 +1,5 @@
 /* JarvisTV companion SW — shell offline leve; API sempre na rede. */
-var CACHE = 'jarvistv-shell-v0.6.39';
+var CACHE = 'jarvistv-shell-v0.6.40';
 var SHELL = [
   './',
   './index.html',

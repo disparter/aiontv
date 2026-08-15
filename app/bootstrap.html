@@ -21,10 +21,15 @@
   </div>
   <script>
 (function () {
-  var VERSION = '0.6.39';
+  /** Bump quando mudar lógica de discovery (não precisa bump só por IP do PC). */
+  var VERSION = '0.6.40';
   var PORT = '8080';
-  var CANDIDATES = ['192.168.15.8', '192.168.15.83'];
+  /** Hints iniciais — se o IP do PC mudar dentro do /24, o scan acha sem republicar. */
+  var SEEDS = ['192.168.15.8', '192.168.15.83'];
+  var HOSTNAME_HINTS = ['FFAvell', 'FFAvell.local'];
   var KEY = 'aiontv.lanHost';
+  var CONCURRENCY = 32;
+  var PROBE_MS = 900;
   var statusEl = document.getElementById('status');
   var detailEl = document.getElementById('detail');
   var settled = false;
@@ -33,13 +38,62 @@
     deviceId = new URLSearchParams(location.search || '').get('deviceId') || '';
   } catch (e) { /* */ }
 
-  function preferredHostForDevice() {
+  function preferredSeedsForDevice() {
     var d = (deviceId || '').toLowerCase();
-    if (d.indexOf('bedroom') >= 0 || d.indexOf('quarto') >= 0) return '192.168.15.8';
-    if (d.indexOf('living') >= 0 || d.indexOf('sala') >= 0 || d.indexOf('mother') >= 0) {
-      return '192.168.15.83';
+    if (d.indexOf('bedroom') >= 0 || d.indexOf('quarto') >= 0) {
+      return ['192.168.15.8', '192.168.15.83'];
     }
-    return '';
+    if (d.indexOf('living') >= 0 || d.indexOf('sala') >= 0 || d.indexOf('mother') >= 0) {
+      return ['192.168.15.83', '192.168.15.8'];
+    }
+    return SEEDS.slice();
+  }
+
+  function lastHost() {
+    try { return localStorage.getItem(KEY) || ''; } catch (e) { return ''; }
+  }
+
+  function prefixOf(ip) {
+    var m = /^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})$/.exec(ip || '');
+    return m ? m[1] : '';
+  }
+
+  /** Monta lista: last → seeds preferidos → hostnames → resto do /24 de cada seed. */
+  function buildHostList() {
+    var out = [];
+    var seen = {};
+    function add(h) {
+      if (!h || seen[h]) return;
+      seen[h] = true;
+      out.push(h);
+    }
+    var last = lastHost();
+    if (last) add(last);
+    preferredSeedsForDevice().forEach(add);
+    SEEDS.forEach(add);
+    HOSTNAME_HINTS.forEach(add);
+
+    var prefixes = [];
+    function addPrefix(p) {
+      if (!p || prefixes.indexOf(p) >= 0) return;
+      prefixes.push(p);
+    }
+    addPrefix(prefixOf(last));
+    SEEDS.forEach(function (s) { addPrefix(prefixOf(s)); });
+    // Fallback clássico do lab se seeds forem hostname-only
+    if (prefixes.length === 0) addPrefix('192.168.15');
+
+    prefixes.forEach(function (p) {
+      // IPs "baixos" e comuns do lab primeiro (gateway vizinhos / DHCP cedo)
+      var order = [];
+      var i;
+      for (i = 1; i <= 40; i++) order.push(i);
+      for (i = 80; i <= 100; i++) order.push(i);
+      for (i = 41; i <= 79; i++) order.push(i);
+      for (i = 101; i <= 254; i++) order.push(i);
+      for (i = 0; i < order.length; i++) add(p + '.' + order[i]);
+    });
+    return out;
   }
 
   function tvUrl(host) {
@@ -60,51 +114,72 @@
     statusEl.textContent = 'Nenhum PC encontrado nesta rede.';
     detailEl.innerHTML =
       'Backend precisa estar ligado no PC (rede local).<br>' +
-      'Confira os hosts em bootstrap.html ou abra /tv/ direto pelo IP do PC.';
+      'O app varreu o range LAN automaticamente — confira se o servidor está no ar.';
   }
 
-  function probe(host, onOk, onFail) {
-    var done = false;
-    var finish = function (ok) {
-      if (done) return;
-      done = true;
-      clearTimeout(timer);
-      if (ok) onOk(); else onFail();
-    };
-    var timer = setTimeout(function () { finish(false); }, 2200);
-    var img = new Image();
-    img.onload = function () { finish(true); };
-    img.onerror = function () { finish(false); };
-    img.src = 'http://' + host + ':' + PORT + '/tv/lan-beacon.png?t=' + Date.now();
+  function probe(host) {
+    return new Promise(function (resolve) {
+      var done = false;
+      var finish = function (ok) {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        resolve(ok ? host : null);
+      };
+      var timer = setTimeout(function () { finish(false); }, PROBE_MS);
+      var img = new Image();
+      img.onload = function () { finish(true); };
+      img.onerror = function () { finish(false); };
+      img.src = 'http://' + host + ':' + PORT + '/tv/lan-beacon.png?t=' + Date.now();
+    });
   }
 
-  // deviceId manda: TV do quarto não deve preferir o NIC da sala (cache localStorage).
-  var ordered = CANDIDATES.slice();
-  var prefer = preferredHostForDevice();
-  if (prefer) {
-    ordered = [prefer].concat(ordered.filter(function (h) { return h !== prefer; }));
-  } else {
-    try {
-      var last = localStorage.getItem(KEY);
-      if (last) {
-        ordered = [last].concat(ordered.filter(function (h) { return h !== last; }));
+  function scan(hosts) {
+    var idx = 0;
+    var total = hosts.length;
+    detailEl.textContent = 'Scan LAN · até ' + total + ' hosts · porta ' + PORT;
+
+    function tick() {
+      if (settled) return;
+      if (idx >= total) {
+        fail();
+        return;
       }
-    } catch (e) {}
+      var batch = [];
+      while (batch.length < CONCURRENCY && idx < total) {
+        batch.push(hosts[idx++]);
+      }
+      statusEl.textContent = 'Procurando… ' + Math.min(idx, total) + '/' + total;
+      Promise.all(batch.map(probe)).then(function (results) {
+        if (settled) return;
+        for (var i = 0; i < results.length; i++) {
+          if (results[i]) {
+            go(results[i]);
+            return;
+          }
+        }
+        tick();
+      });
+    }
+    tick();
   }
 
-  detailEl.textContent = ordered.join(' → ');
-  var idx = 0;
-  function next() {
-    if (settled) return;
-    if (idx >= ordered.length) {
-      fail();
-      return;
+  // Se já estamos servidos pelo backend (bootstrap aberto direto do PC), pula o scan.
+  try {
+    if (location.protocol === 'http:' || location.protocol === 'https:') {
+      var here = location.hostname;
+      if (here && here !== 'localhost' && here.indexOf('jsdelivr') < 0 && here.indexOf('github') < 0) {
+        // Ainda valida beacon no host atual primeiro (rápido)
+        probe(here).then(function (ok) {
+          if (ok) go(here);
+          else scan(buildHostList());
+        });
+        return;
+      }
     }
-    var host = ordered[idx++];
-    statusEl.textContent = 'Testando ' + host + '…';
-    probe(host, function () { go(host); }, next);
-  }
-  next();
+  } catch (e) { /* */ }
+
+  scan(buildHostList());
 })();
   </script>
 </body>
